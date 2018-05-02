@@ -1,11 +1,12 @@
 PImage img;
 float px,py,pz;
-
+boolean[] keydown;
 
 void setup() {
   //size(1230,700);
   px=0;
   py=0;
+  keydown = new boolean[256];
   //img = loadImage("emmaus.jpg");
   //img = loadImage("cows.jpg");
   img = loadImage("calf.jpg");
@@ -19,14 +20,18 @@ void setup() {
 void draw() {
   int bg=60;
   background(bg);
-  image(img,10,100,pz*img.width,pz*img.height);
-  image(img,width/2+5,100,pz*img.width,pz*img.height);
-  fill(bg);
+  clip(10,100,width/2-15,height-110);
+  image(img,10+px,100+py,pz*img.width,pz*img.height);
+  clip(width/2+5,100,width/2-15,height-110);
+  image(img,width/2+5+px,100+py,pz*img.width,pz*img.height);
+  noClip();
+  //fill(bg);
   noStroke();
-  rect(width-10,100,10,height-100);
-  rect(width/2-5,100,10,height-100);
+  //rect(width-10,100,10,height-100);
+  //rect(width/2-5,100,10,height-100);
   fill(0);
   rect(0,0,width,90);
+  handleKeys();
 }
 
 void mousePressed(MouseEvent event) {
@@ -45,6 +50,35 @@ void mouseWheel(MouseEvent event) {
 void mouseMoved() {
 }
 
+
 void keyPressed() {
-  println("key "+keyCode);
+  println("key down "+keyCode + " " + key);
+  int i = keyCode & 255;
+  keydown[i]=true;  
+}
+
+void keyReleased() {
+  println("key up "+keyCode + " " + key);
+  int i = keyCode & 255;
+  keydown[i]=false;  
+}
+
+void handleKeys() {
+  int ss=30;
+  float w=img.width*pz -50;
+  float h = img.height*pz-50;
+  if (keydown[90]) zoom(1.1); 
+  if (keydown[88]) zoom(1/1.1); 
+  if (keydown[65] && px > -w) px -= ss; 
+  if (keydown[68] && px < w) px += ss; 
+  if (keydown[87] && py > -h) py -= ss; 
+  if (keydown[83] && py < h) py += ss; 
+}
+
+void zoom(float f) {
+  pz *= f;
+  int w = width/4;
+  int h = (height-100)/2;
+  px += (w - px) * (pz/f - pz);
+  py += (h - py) * (pz/f - pz);
 }
